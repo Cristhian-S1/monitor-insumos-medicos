@@ -1,0 +1,39 @@
+services:
+  postgres:
+    # Imagen oficial PostgreSQL 17
+    image: postgres:17
+
+    # Nombre del contenedor
+    container_name: monitor-insumos-db
+
+    # Reinicia automáticamente excepto si se detiene manualmente
+    restart: unless-stopped
+
+    environment:
+      # Nombre de la base de datos
+      POSTGRES_DB: monitor_insumos
+
+      # Usuario PostgreSQL
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+
+      # Password PostgreSQL
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+
+    ports:
+      # Puerto host:contenedor (para evitar conflictor con el postgresql local)
+      - "5433:5432"
+
+    volumes:
+      # Persistencia de datos postgresql
+      - pgdata:/var/lib/postgresql/data
+
+      # Script creación tablas
+      - ./tablas.sql:/docker-entrypoint-initdb.d/01-tablas.sql
+
+      # Script insercion datos iniciales
+      - ./insersiones.sql:/docker-entrypoint-initdb.d/02-insersiones.sql
+
+volumes:
+  # Persistencia
+  pgdata:
+    name: monitor_insumos_pgdata
