@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor de Insumos Médicos</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Monitor de Insumos Médicos</h1>
+      <p class="subtitle">Consulta de stock de oxígeno</p>
+    </header>
+
+    <main>
+      <section class="hospitales-panel">
+        <h2>Hospitales</h2>
+        <div id="hospitales-list" class="hospitales-grid">
+          <p class="loading">Cargando hospitales...</p>
+        </div>
+      </section>
+
+      <section id="stock-panel" class="stock-panel hidden">
+        <h2>Estado de Stock</h2>
+        <div id="stock-result"></div>
+        <div id="tanques-list"></div>
+      </section>
+
+      <section class="form-panel">
+        <h2>Registrar nueva lectura</h2>
+        <form id="lectura-form">
+          <div class="form-group">
+            <label for="hospital-select">Hospital:</label>
+            <select id="hospital-select" required></select>
+          </div>
+          <div class="form-group">
+            <label for="tanque-select">Tanque:</label>
+            <select id="tanque-select" required>
+              <option value="">Seleccione un hospital primero</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="nivel-psi">Nivel PSI:</label>
+            <input type="number" id="nivel-psi" min="0" required placeholder="Ej: 1500">
+          </div>
+          <button type="submit">Registrar lectura</button>
+        </form>
+        <p id="form-message" class="form-message hidden"></p>
+      </section>
+    </main>
+
+    <footer>
+      <p>Monitor de Insumos Médicos &mdash; Grupo 5</p>
+    </footer>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
