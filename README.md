@@ -55,7 +55,8 @@ docker run -d --name monitor-insumos-db \
   -v $(pwd)/insersiones.sql:/docker-entrypoint-initdb.d/02-insersiones.sql \
   -p 5432:5432 \
   postgres:17-alpine
-\```
+\
+```
 
 - **`docker run`** – Crea e inicia un nuevo contenedor.
 - **`-d`** – Ejecuta el contenedor en segundo plano (modo *detached*).
