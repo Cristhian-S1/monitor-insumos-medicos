@@ -3,54 +3,130 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monitor de Insumos Médicos</title>
+  <title>O2Monitor — Control de Insumos Médicos</title>
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>Monitor de Insumos Médicos</h1>
-      <p class="subtitle">Consulta de stock de oxígeno</p>
+    <header class="navbar">
+      <div class="logo-area">
+        <!-- SVG O2 / Medical Shield Icon -->
+        <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M12 8v8"/>
+          <path d="M9 12h6"/>
+        </svg>
+        <span class="logo-text">O2Monitor</span>
+      </div>
+      <div class="header-actions">
+        <p class="subtitle">Consulta de stock de oxígeno</p>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Cambiar tema">
+          <!-- Sun Icon (visible in Dark Mode) -->
+          <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2"/>
+            <path d="M12 20v2"/>
+            <path d="m4.93 4.93 1.41 1.41"/>
+            <path d="m17.66 17.66 1.41 1.41"/>
+            <path d="M2 12h2"/>
+            <path d="M20 12h2"/>
+            <path d="m6.34 17.66-1.41 1.41"/>
+            <path d="m19.07 4.93-1.41 1.41"/>
+          </svg>
+          <!-- Moon Icon (visible in Light Mode) -->
+          <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+        </button>
+      </div>
     </header>
 
-    <main>
-      <section class="hospitales-panel">
-        <h2>Hospitales</h2>
-        <div id="hospitales-list" class="hospitales-grid">
-          <p class="loading">Cargando hospitales...</p>
-        </div>
-      </section>
+    <main class="dashboard-layout">
+      <!-- Left Column: Hospital Selection and Record entry -->
+      <div class="sidebar-column">
+        <section class="panel hospitales-panel">
+          <div class="panel-header">
+            <!-- SVG building icon -->
+            <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16"/>
+              <path d="M3 21h18"/>
+              <path d="M10 12h4"/>
+              <path d="M10 16h4"/>
+              <path d="M10 8h4"/>
+            </svg>
+            <h2>Hospitales</h2>
+          </div>
+          <div id="hospitales-list" class="hospitales-grid">
+            <p class="loading">Cargando hospitales...</p>
+          </div>
+        </section>
 
-      <section id="stock-panel" class="stock-panel hidden">
-        <h2>Estado de Stock</h2>
-        <div id="stock-result"></div>
-        <div id="tanques-list"></div>
-      </section>
+        <section class="panel form-panel">
+          <div class="panel-header">
+            <!-- SVG edit/register icon -->
+            <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+            </svg>
+            <h2>Registrar lectura</h2>
+          </div>
+          <form id="lectura-form">
+            <div class="form-group">
+              <label for="hospital-select">Hospital</label>
+              <div class="select-wrapper">
+                <select id="hospital-select" required></select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="tanque-select">Tanque</label>
+              <div class="select-wrapper">
+                <select id="tanque-select" required>
+                  <option value="">Seleccione un hospital primero</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="nivel-psi">Nivel actual (PSI)</label>
+              <input type="number" id="nivel-psi" min="0" required placeholder="Ej: 1500">
+            </div>
+            <button type="submit" class="btn-primary">
+              <span>Registrar lectura</span>
+              <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"/>
+                <path d="m12 5 7 7-7 7"/>
+              </svg>
+            </button>
+          </form>
+          <div id="form-message" class="form-message hidden"></div>
+        </section>
+      </div>
 
-      <section class="form-panel">
-        <h2>Registrar nueva lectura</h2>
-        <form id="lectura-form">
-          <div class="form-group">
-            <label for="hospital-select">Hospital:</label>
-            <select id="hospital-select" required></select>
+      <!-- Right Column: Status and Tanks -->
+      <div class="content-column">
+        <section id="stock-panel" class="panel stock-panel">
+          <!-- Placeholder shown initially before selection -->
+          <div id="stock-placeholder" class="stock-placeholder">
+            <div class="placeholder-glow">
+              <svg class="placeholder-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4"/>
+                <path d="M12 8h.01"/>
+              </svg>
+            </div>
+            <h3>Seleccione un Hospital</h3>
+            <p>Seleccione un centro médico de la lista para consultar los niveles de oxígeno de sus tanques y el estado general de stock en tiempo real.</p>
           </div>
-          <div class="form-group">
-            <label for="tanque-select">Tanque:</label>
-            <select id="tanque-select" required>
-              <option value="">Seleccione un hospital primero</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="nivel-psi">Nivel PSI:</label>
-            <input type="number" id="nivel-psi" min="0" required placeholder="Ej: 1500">
-          </div>
-          <button type="submit">Registrar lectura</button>
-        </form>
-        <p id="form-message" class="form-message hidden"></p>
-      </section>
+          <div id="stock-result"></div>
+          <div id="tanques-list"></div>
+        </section>
+      </div>
     </main>
 
-    <footer>
+    <footer class="footer">
       <p>Monitor de Insumos Médicos &mdash; Grupo 5</p>
     </footer>
   </div>
