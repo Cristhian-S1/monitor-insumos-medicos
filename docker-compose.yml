@@ -20,8 +20,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
 
     ports:
-      # Puerto host:contenedor (para evitar conflictor con el postgresql local)
-      - "5433:5432"
+      # Puerto host:contenedor
+      - "5432:5432"
 
     volumes:
       # Persistencia de datos postgresql
