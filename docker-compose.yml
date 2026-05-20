@@ -1,0 +1,14 @@
+# Nivel de Presentación — Monitor de Insumos Médicos
+# Este archivo orquesta el entorno local para el nivel de presentación (Frontend) de la aplicación.
+
+services:
+  # Servicio que levanta el servidor web para la interfaz de usuario
+  frontend:
+    build:
+      context: ./frontend      # Directorio base donde se encuentra el código y el Dockerfile
+      dockerfile: Dockerfile   # Nombre del archivo Dockerfile para construir la imagen de Docker
+    image: monitor-insumos-frontend:latest  # Nombre y etiqueta asignados a la imagen construida localmente
+    container_name: monitor-insumos-frontend # Nombre asignado al contenedor en ejecución
+    restart: unless-stopped    # Reinicia el contenedor si falla o si Docker se reinicia, a menos que sea detenido manualmente
+    ports:
+      - "80:80"                # Mapea el puerto 80 de tu máquina al puerto 80 interno del contenedor (Nginx)
