@@ -1,10 +1,20 @@
-# monitor-insumos-medicos
+# Base de datos — PostgreSQL
 
-Monitoreo de stock de oxígeno en centros médicos.
+## Proposito
+Capa de datos. Almacena hospitales, tanques de oxígeno y su historial de niveles.
 
-## Base de datos
+## Esquema
 
-PostgreSQL con tres tablas: `hospital`, `tanque` e `historial`. El esquema y datos de ejemplo están en `tablas.sql` e `insersiones.sql`.
+| Tabla | Descripción | Relaciones |
+|-------|------------|------------|
+| `hospital` | Centros médicos | 1:1 con `tanque` |
+| `tanque` | Tanques de oxígeno | N:1 con `historial` |
+| `historial` | Registro histórico de niveles | PK compuesta `(tanque_id_fk, fecha_ingreso)` |
+
+## Archivos
+
+- `tablas.sql` — DDL con `DROP TABLE IF EXISTS` + `CREATE TABLE`
+- `insersiones.sql` — Datos iniciales 3 hospitales, 6 tanques, registros de historial
 
 ## Docker
 
@@ -16,7 +26,7 @@ Usa `docker compose` para levantar PostgreSQL 17 con un volumen nombrado (`monit
 docker compose up -d
 ```
 
-La base de datos queda disponible en `localhost:5433`, BD `monitor_insumos`, usuario `admin`.
+La base de datos queda disponible en `localhost:5432`, BD `monitor_insumos`, usuario `admin`.
 
 ### Detener
 
