@@ -1,0 +1,13 @@
+{
+  "name": "monitor-insumos-backend",
+  "version": "1.0.0",
+  "description": "API REST para Monitor de Insumos Médicos - Consulta stock de oxígeno",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "pg": "^8.13.0"
+  }
+}

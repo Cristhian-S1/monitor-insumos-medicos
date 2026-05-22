@@ -1,0 +1,83 @@
+services:
+
+# Nivel 4: Base de datos
+  postgres:
+    image: postgres:17
+    container_name: monitor-insumos-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-monitor_insumos}
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/tablas.sql:/docker-entrypoint-initdb.d/01-tablas.sql
+      - ./database/insersiones.sql:/docker-entrypoint-initdb.d/02-insersiones.sql
+    networks:
+      - database-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-monitor_insumos}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Nivel 3: Backend de 2 replicas con --scale backend=2
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: monitor-insumos-backend:latest
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: ${POSTGRES_DB:-monitor_insumos}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+      PORT: "3000"
+    networks:
+      - database-network
+      - backend-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Nivel 2: Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: monitor-insumos-frontend:latest
+    restart: unless-stopped
+    networks:
+      - frontend-network
+
+  # Nivel 1: Proxy Inverso
+  proxy:
+    image: nginx:alpine
+    container_name: monitor-insumos-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - frontend-network
+      - backend-network
+    depends_on:
+      - frontend
+      - backend
+
+# Volumenes
+volumes:
+  pgdata:
+    name: monitor_insumos_pgdata
+
+# Redes para aislamiento real entre niveles
+networks:
+  frontend-network:
+    name: monitor_frontend_net
+  backend-network:
+    name: monitor_backend_net
+  database-network:
+    name: monitor_database_net
