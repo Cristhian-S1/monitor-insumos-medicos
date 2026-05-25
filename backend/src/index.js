@@ -17,24 +17,26 @@ const dbConfig = {
 
 let pool;
 
-function connectWithRetry(retries = 10, delay = 3000) {
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function connectWithRetry(retries = 10, delay = 3000) {
   pool = new Pool(dbConfig);
   pool.on('error', (err) => {
     console.error('Unexpected error on idle client', err);
   });
-  return pool.query('SELECT 1')
-    .then(() => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await pool.query('SELECT 1');
       console.log('Database connected');
-    })
-    .catch((err) => {
-      console.error(`DB connection failed (retries left: ${retries}):`, err.message);
-      if (retries > 0) {
-        return new Promise((resolve) => setTimeout(resolve, delay))
-          .then(() => connectWithRetry(retries - 1, delay));
-      }
-      console.error('Could not connect to database after all retries');
-      process.exit(1);
-    });
+      return;
+    } catch (err) {
+      console.error(`DB connection failed (attempt ${i + 1}/${retries}):`, err.message);
+      if (i < retries - 1) await sleep(delay);
+    }
+  }
+  console.error('Could not connect to database after all retries');
+  process.exit(1);
 }
 
 connectWithRetry();
