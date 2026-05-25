@@ -40,6 +40,8 @@ docker compose down -v                    # Detener y eliminar datos
 docker compose ps                         # Ver estado de contenedores
 docker compose logs -f backend            # Logs del backend en vivo
 docker compose logs backend               # Logs de todas las réplicas
+docker rmi -f nombre_imagen               # Eliminar imagen de docker 
+docker rmi -f $(docker images -a -q)      # Eliminar todas las imagenes
 ```
 
 ## Pruebas 
