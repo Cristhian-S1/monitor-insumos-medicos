@@ -1,40 +1,42 @@
-# monitor-insumos-medicos
-Aplicacion que consulta el stock de oxígeno de un centro medico utilizando la estandarizacion de cada componente de la arquitecutra mediante Docker
-
-# creación de la base de datos del equipo
-
--- 1. Crear la tabla de Hospitales
-CREATE TABLE hospital (
-    hospital_id INT GENERATED ALWAYS AS IDENTITY,
-    descripcion VARCHAR(68) NOT NULL,
-    ubicacion VARCHAR(68) NOT NULL,
-    
-    CONSTRAINT pk_hospital PRIMARY KEY (hospital_id)
-);
--- 2. Crear la tabla de Tanques
-CREATE TABLE tank (
-    tank_id INT GENERATED ALWAYS AS IDENTITY,
-    color VARCHAR(15) NOT NULL,
-    status INT NOT NULL,
-    tank_size INT NOT NULL,
-    
-    CONSTRAINT pk_tank PRIMARY KEY (tank_id),
-    CONSTRAINT chk_status_bool CHECK (status IN (0, 1)),
-    CONSTRAINT chk_tank_size_positivo CHECK (tank_size > 0)
-);
--- 3. Crear la tabla intermedia (Historial de movimientos)
--- Relación Uno a Muchos desde 'hospital' y Uno a Muchos desde 'tank'
-CREATE TABLE historial (
-    hospital_id_fk INT NOT NULL,
-    tank_id_fk INT NOT NULL,
-    nivel_psi INT NOT NULL,
-    fecha_ingreso DATE NOT NULL DEFAULT CURRENT_DATE,
-    fecha_salida DATE,
-    
-    -- Llave primaria compuesta (Evita duplicar el mismo tanque en el mismo hospital en la misma fecha de ingreso)
-    CONSTRAINT pk_historial PRIMARY KEY (hospital_id_fk, tank_id_fk, fecha_ingreso),
-        
-    -- Restricciones de validación (CHECKS)
-    CONSTRAINT chk_nivel_psi_positivo CHECK (nivel_psi >= 0),
-    CONSTRAINT chk_fechas_coherentes CHECK (fecha_salida IS NULL OR fecha_salida >= fecha_ingreso)
-);
+# Backend — API REST
+> Nivel 3 — Lógica de negocio. Node.js 18 + Express + PostgreSQL.
+## Stack
+- **Runtime**: `node:18-alpine` (Alpine Linux, imagen ligera)
+- **Framework**: Express 4.21
+- **DB Driver**: pg 8.13
+## Dockerfile
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package.json ./
+RUN npm install --production && npm cache clean --force
+COPY src/ ./src/
+USER node
+EXPOSE 3000
+CMD ["node", "src/index.js"]
+```
+**Optimizaciones aplicadas:**
+- `COPY package.json` antes del código --> cacheo de capas en rebuilds
+- `npm install --production` --> sin devDependencies
+- `npm cache clean --force` --> reduce tamaño de imagen
+- `USER node` --> no corre como root
+## Endpoints
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/api/health` | Health check |
+| GET | `/api/hospitales` | Listar hospitales |
+| GET | `/api/stock/:id` | Stock de oxígeno |
+| GET | `/api/tanques/:id` | Tanques del hospital |
+| POST | `/api/historial` | Registrar lectura |
+## Conexión a BD
+Se conecta al host `postgres` (nombre del servicio en Docker Compose). Tiene un mecanismo de retry (10 intentos, 3s entre cada uno) para tolerar arranques lentos de PostgreSQL.
+Las credenciales se leen de variables de entorno.
+## Variables de Entorno
+| Variable | Default | Descripción |
+|----------|---------|-------------|
+| `DB_HOST` | `postgres` | Host de la BD |
+| `DB_PORT` | `5432` | Puerto de la BD |
+| `DB_NAME` | `monitor_insumos` | Nombre de la BD |
+| `DB_USER` | -- | Usuario (requerido) |
+| `DB_PASSWORD` | -- | Contraseña (requerida) |
+| `PORT` | `3000` | Puerto del servidor |
