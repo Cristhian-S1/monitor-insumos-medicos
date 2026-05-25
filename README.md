@@ -184,13 +184,13 @@ container-app-docker/
 
 ## Ramas del Repositorio
 
-| Rama | Contenido | Docker Compose |
+| Rama | Contenido | 
 |------|-----------|----------------|
-| `postgresql` | PostgreSQL 17 + esquema + datos | Solo BD |
-| `backend` | API REST + PostgreSQL | Backend + BD |
-| `frontend` | Frontend HTML/CSS/JS | Solo frontend |
-| `proxy` | Proxy nginx + orquestación completa | 4 niveles |
-| `main` | Integración completa | 4 niveles |
+| `postgresql` | PostgreSQL 17 + esquema + datos | 
+| `backend` | API REST + PostgreSQL | 
+| `frontend` | Frontend HTML/CSS/JS | 
+| `proxy` | Proxy nginx + orquestación completa |
+| `main` | Integración completa | 
 
 
 
