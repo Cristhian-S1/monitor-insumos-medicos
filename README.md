@@ -185,7 +185,7 @@ container-app-docker/
 ## Ramas del Repositorio
 
 | Rama | Contenido | 
-|------|-----------|----------------|
+|------|-----------|
 | `postgresql` | PostgreSQL 17 + esquema + datos | 
 | `backend` | API REST + PostgreSQL | 
 | `frontend` | Frontend HTML/CSS/JS | 
