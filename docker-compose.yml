@@ -6,9 +6,9 @@ services:
     container_name: monitor-insumos-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-monitor_insumos}
-      POSTGRES_USER: ${POSTGRES_USER:-admin}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./database/tablas.sql:/docker-entrypoint-initdb.d/01-tablas.sql
@@ -16,12 +16,12 @@ services:
     networks:
       - database-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-monitor_insumos}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Nivel 3: Backend de 2 replicas con --scale backend=2
+  # Nivel 3: Backend de 2 replicas
   backend:
     build:
       context: ./backend
@@ -31,9 +31,9 @@ services:
     environment:
       DB_HOST: postgres
       DB_PORT: "5432"
-      DB_NAME: ${POSTGRES_DB:-monitor_insumos}
-      DB_USER: ${POSTGRES_USER:-admin}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       PORT: "3000"
     networks:
       - database-network
@@ -41,6 +41,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    deploy:
+      replicas:2
 
   # Nivel 2: Frontend
   frontend:
