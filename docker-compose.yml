@@ -42,7 +42,7 @@ services:
       postgres:
         condition: service_healthy
     deploy:
-      replicas:2
+      replicas: 2
 
   # Nivel 2: Frontend
   frontend:
