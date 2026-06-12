@@ -36,18 +36,56 @@ Browser :80 --> Proxy (nginx:alpine) --> Frontend (nginx:alpine, HTML/CSS/JS)
 - La base de datos **no está expuesta** al host
 - El proxy es el **único servicio** con puerto público (`80`)
 
-## Despliegue
+## Despliegue en la VM
+
+### 1. Conectarse al servidor
 
 ```bash
-# 1. Clonar el repositorio
+ssh dici-uta@146.83.102.24
+# Usar la contraseña asignada al grupo
+```
+
+> La VM solo es accesible desde la red de la universidad.
+
+### 2. Instalar Docker en CentOS
+
+```bash
+# Instalar dependencias
+sudo yum install -y yum-utils
+
+# Agregar repositorio oficial de Docker
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+# Instalar Docker Engine y Compose plugin
+sudo yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Iniciar y habilitar Docker
+sudo systemctl enable --now docker
+
+# Agregar el usuario al grupo docker
+sudo usermod -aG docker $USER
+
+# Cerrar sesión y volver a entrar para que aplique el grupo
+exit
+ssh dici-uta@146.83.102.24
+```
+
+### 3. Clonar y levantar el proyecto
+
+```bash
 git clone https://github.com/Cristhian-S1/monitor-insumos-medicos.git
 cd monitor-insumos-medicos
-
-# 2. Crear el archivo de variables de entorno
 cp .env.example .env
-
-# 3. Levantar el sistema completo con un solo comando
 docker compose up -d
+```
+
+### 4. Verificar
+
+```bash
+# Estado de los contenedores
+docker compose ps
+
+# Acceder desde el navegador a http://146.83.102.24
 ```
 
 El sistema queda disponible en: **http://146.83.102.24**
@@ -127,15 +165,6 @@ docker compose down            # Detener (conserva datos)
 docker compose down -v         # Detener y eliminar datos
 docker compose logs -f backend # Logs del backend en vivo
 ```
-
-### Prueba de Registro de Lectura desde la UI
-
-1. Abrir `http://146.83.102.24/` en el navegador
-2. Seleccionar un hospital (ej: "Hospital Regional de Arica")
-3. Seleccionar un tanque
-4. Ingresar un nivel PSI (ej: 1500)
-5. Clic en "Registrar lectura"
-6. Verificar que el stock se actualiza
 
 ## API Endpoints
 
