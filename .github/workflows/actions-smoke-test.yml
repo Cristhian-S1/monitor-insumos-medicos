@@ -1,0 +1,27 @@
+name: Actions Smoke Test
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    name: Smoke test on main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate docker-compose.yml
+        run: docker compose config -q
+
+      - name: Verify core build files exist
+        run: |
+          test -f backend/Dockerfile  && echo "backend/Dockerfile  OK"
+          test -f frontend/Dockerfile && echo "frontend/Dockerfile OK"
+          test -f nginx/nginx.conf    && echo "nginx/nginx.conf    OK"
+          test -f database/tablas.sql && echo "database/tablas.sql OK"
+
+      - name: Report
+        run: echo "Smoke test passed at $(date -u) — repo is healthy on main."

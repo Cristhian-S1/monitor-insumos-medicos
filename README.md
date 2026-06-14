@@ -123,6 +123,8 @@ curl http://146.83.102.24/api/hospitales
 docker compose ps
 ```
 
+> **Nota sobre la auto-recuperación:** en `docker compose`, la política `restart: unless-stopped` **no** reconcilia la cuenta de réplicas en segundo plano. Tras `docker kill`, la réplica eliminada no vuelve sola, por lo que hay que ejecutar `docker compose up -d` para que compose restaure el conteo a 2. La prueba anterior valida que la réplica sobreviviente absorbe el tráfico, no la auto-recuperación.
+
 ### 4. Prueba de Persistencia de Datos
 
 ```bash
@@ -222,11 +224,29 @@ monitor-insumos-medicos/
 │   └── insersiones.sql       #   Datos iniciales
 ├── nginx/                    # Nivel 1 — Proxy inverso
 │   └── nginx.conf            #   resolver 127.0.0.11, balanceo entre réplicas
+├── .github/workflows/
+│   └── actions-smoke-test.yml #   Smoke test que valida el repo en cada push a main
 ├── docker-compose.yml        # Orquestación 4 niveles, 2 réplicas backend
 ├── .env.example              # Plantilla de credenciales
 ├── .dockerignore
 └── .gitignore
 ```
+
+## CI/CD con GitHub Actions
+
+El repositorio incluye **un solo workflow** en `.github/workflows/`:
+
+| Workflow | Disparador | Qué hace |
+|----------|------------|----------|
+| `actions-smoke-test.yml` | Push a `main` (o ejecución manual desde la pestaña Actions) | Hace checkout, valida `docker-compose.yml` con `docker compose config -q`, y verifica que los archivos clave (`backend/Dockerfile`, `frontend/Dockerfile`, `nginx/nginx.conf`, `database/tablas.sql`) existen. |
+
+Es una prueba muy sencilla pensada para confirmar que GitHub Actions corre en el repositorio y que el repo está en un estado sano.
+
+## Notas operacionales
+
+- **`docker kill` no se reconcilia solo.** Si tumbas una réplica a mano, ejecuta `docker compose up -d` para restaurar la cuenta a 2. Detalles en la Prueba 3.
+- **El proxy es el único puerto expuesto.** Nunca publiques `postgres`, `backend` o `frontend` al host — romperías el aislamiento de red.
+- **`docker compose down -v` borra todos los datos.** El volumen `monitor_insumos_pgdata` contiene la base.
 
 ## Ramas del Repositorio
 
