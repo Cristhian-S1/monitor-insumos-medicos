@@ -144,7 +144,12 @@ app.post('/api/historial', async (req, res) => {
   try {
     const result = await pool.query(
       `INSERT INTO historial (hospital_id_fk, tanque_id_fk, nivel_psi, fecha_ingreso, fecha_salida)
-       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT ON CONSTRAINT pk_historial
+       DO UPDATE SET nivel_psi = EXCLUDED.nivel_psi,
+                     hospital_id_fk = EXCLUDED.hospital_id_fk,
+                     fecha_salida = EXCLUDED.fecha_salida
+       RETURNING *`,
       [
         hospital_id_fk,
         tanque_id_fk,
