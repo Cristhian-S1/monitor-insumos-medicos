@@ -163,8 +163,11 @@ docker compose exec frontend ping postgres
 
 ```bash
 docker compose ps              # Ver estado de todos los contenedores
-docker compose down            # Detener (conserva datos)
+docker compose down            # Detener (conserva datos e imágenes)
 docker compose down -v         # Detener y eliminar datos
+docker compose down --rmi all  # Detener y eliminar todas las imágenes
+docker compose down --rmi local # Detener y eliminar solo imágenes locales
+docker compose down -v --rmi all # Destrucción total: contenedores, datos e imágenes
 docker compose logs -f backend # Logs del backend en vivo
 ```
 
